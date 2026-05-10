@@ -21,9 +21,10 @@ Goal: turn the static proof-of-concept into a sellable "stop losing leads" admin
    - Acceptance: local repo pushes to GitHub and Vercel is connected to the GitHub repo.
 
 3. Connect Linear, GitHub, and Vercel
-   - Status: Linear project and GitHub repo are created; blocked on Vercel GitHub App/connection grant
+   - Status: Done
    - Acceptance: commits and pull requests can reference Linear issue IDs; Vercel deployments are visible from the repo workflow.
-   - Required approval: grant Vercel access to `vscodeall41-ai/lead-rescue-admin-os` from the Vercel project Git settings or GitHub Vercel App installation page.
+   - Connected repo: `vscodeall41-ai/lead-rescue-admin-os`
+   - Production branch: `main`
 
 ## Milestone 2 - Quote Engine
 
