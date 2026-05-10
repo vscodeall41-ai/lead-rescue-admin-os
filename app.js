@@ -1,65 +1,64 @@
 const CONTACT = {
-  whatsapp: "27655554433",
-  officeWhatsapp: "27612959755",
+  whatsapp: "27000000000",
+  officeWhatsapp: "27000000001",
   email: "owner@example.com",
   area: "the service area",
   businessName: "the business",
   ownerName: "the owner",
 };
 
-const STORAGE_KEY = "ras-metal-leads-v1";
+const STORAGE_KEY = "lead-rescue-admin-os-leads-v1";
 
 const serviceChecklists = {
-  "Security gate or fence": [
-    "Photos of the opening, existing gate, fence line, or damaged section",
-    "Width and height measurements",
-    "Wall/post condition and available fixing points",
-    "Security priority: access control, spikes, visibility, child/pet safety",
-    "Preferred finish: raw steel, painted, galvanized, or powder-coated",
-    "Site access, parking, and electricity availability",
+  "Home service quote": [
+    "Photos or a short video showing the problem or requested work area",
+    "Rough measurements if size affects the quote",
+    "Property access notes and parking constraints",
+    "Preferred timing and whether anyone needs to be on site",
+    "Any matching references, finish preferences, or must-have requirements",
+    "Budget range and decision timeline",
   ],
-  "Welding repair": [
-    "Clear photos of the broken joint or cracked area",
-    "What failed and when it failed",
-    "Material type if known",
-    "Whether the item can be brought to the workshop",
-    "Safety risk or business downtime if not repaired quickly",
+  "Repair or call-out": [
+    "Clear photos of the fault, damage, or failed part",
+    "What happened and when it became urgent",
+    "Whether the business or household is blocked until it is fixed",
+    "Access notes, preferred call-out window, and location pin",
+    "Any previous repair attempts or warranty concerns",
   ],
-  "Custom fabrication": [
-    "Sketch, reference photo, or rough idea",
-    "Approximate dimensions",
-    "Indoor or outdoor use",
-    "Load-bearing or decorative requirement",
-    "Preferred style and finish",
-    "Budget range and deadline",
+  "Installation project": [
+    "Photos of the site from multiple angles",
+    "Approximate dimensions and existing services or obstacles",
+    "New installation, replacement, or upgrade",
+    "Material, finish, or product preferences",
+    "Target install date and approval process",
   ],
-  "Staircase / railing": [
-    "Photos of the space from multiple angles",
-    "Floor-to-floor height and available footprint",
-    "Safety requirements and handrail preference",
-    "Indoor or outdoor exposure",
-    "Finish and style reference",
+  "Event or rental booking": [
+    "Event date, setup time, and collection time",
+    "Venue address, access notes, and contact person on site",
+    "Guest count or quantity needed",
+    "Delivery, setup, staffing, and backup requirements",
+    "Deposit status and decision deadline",
   ],
-  "Pergola / outdoor steelwork": [
-    "Photos of the outdoor area",
-    "Approximate length, width, and height",
-    "Wall-mounted or freestanding structure",
-    "Shade, roof, or decorative purpose",
-    "Exposure to wind and rain",
+  "Cleaning or restoration": [
+    "Photos of the item, room, or surface condition",
+    "Material type and known damage or stains",
+    "Desired result: refresh, deep clean, repair, or full restoration",
+    "Pickup/delivery or on-site service requirement",
+    "Deadline and budget sensitivity",
   ],
-  "Industrial equipment welding": [
-    "Equipment type and failure point",
-    "Downtime impact",
-    "Material and thickness if known",
-    "Access for welding and power availability",
-    "Safety or compliance constraints",
+  "Maintenance contract": [
+    "Sites, assets, or recurring tasks to cover",
+    "Current pain: downtime, missed checks, complaints, or admin load",
+    "Required response times and service frequency",
+    "Existing supplier or maintenance history",
+    "Reporting, invoice, and owner-summary requirements",
   ],
-  "Premium home steel feature": [
-    "Room or outdoor photos",
-    "Inspiration images",
-    "Function: storage, divider, entertainment, fireplace, mezzanine, or feature piece",
-    "Measurements and surrounding finishes",
-    "Budget range and installation deadline",
+  "Custom project": [
+    "Short description of the desired outcome",
+    "Reference photos, sketches, links, or examples",
+    "Approximate size, quantity, or scope",
+    "Where the work must happen and who approves it",
+    "Budget range, deadline, and any non-negotiables",
   ],
   "Manual review item": [
     "Do not auto-quote or promote",
@@ -109,13 +108,13 @@ function localDateStamp(date = new Date()) {
 
 function estimateValue(jobType, budget) {
   const base = {
-    "Security gate or fence": 9500,
-    "Welding repair": 2500,
-    "Custom fabrication": 12000,
-    "Staircase / railing": 22000,
-    "Pergola / outdoor steelwork": 18000,
-    "Industrial equipment welding": 8500,
-    "Premium home steel feature": 26000,
+    "Home service quote": 6500,
+    "Repair or call-out": 2500,
+    "Installation project": 14500,
+    "Event or rental booking": 9000,
+    "Cleaning or restoration": 5500,
+    "Maintenance contract": 18000,
+    "Custom project": 12000,
     "Manual review item": 0,
   }[jobType] || 5000;
 
@@ -139,7 +138,7 @@ function scoreLead(data) {
   if (data.hasPhotos) score += 10;
   if (data.hasMeasurements) score += 8;
   if (data.hasLocation) score += 6;
-  if (["Security gate or fence", "Welding repair", "Industrial equipment welding"].includes(data.jobType)) score += 8;
+  if (["Repair or call-out", "Installation project", "Maintenance contract"].includes(data.jobType)) score += 8;
   if (data.jobType === "Manual review item") score = 10;
   return Math.max(0, Math.min(100, score));
 }
@@ -307,7 +306,7 @@ function exportCsv() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `ras-metal-leads-${localDateStamp()}.csv`;
+  link.download = `lead-rescue-leads-${localDateStamp()}.csv`;
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -320,12 +319,12 @@ function sampleLeads() {
       name: "Nadia",
       phone: "082 111 1111",
       source: "Facebook",
-      jobType: "Security gate or fence",
+      jobType: "Home service quote",
       area: "Northside",
       urgency: "This week",
       propertyType: "Residential",
       budget: "R7,500 - R20,000",
-      message: "Need a sliding gate repaired and maybe a new pedestrian gate. We have photos.",
+      message: "Need a quote for a home service job this week. We have photos and rough measurements.",
       hasPhotos: true,
       hasMeasurements: false,
       hasLocation: true,
@@ -334,12 +333,12 @@ function sampleLeads() {
       name: "Andre",
       phone: "083 222 2222",
       source: "Referral",
-      jobType: "Welding repair",
+      jobType: "Repair or call-out",
       area: "West End",
       urgency: "Emergency / today",
       propertyType: "Commercial",
       budget: "R2,500 - R7,500",
-      message: "Shop security gate hinge broke this morning. Need urgent welding.",
+      message: "A key item failed this morning and the shop needs a same-day call-out.",
       hasPhotos: true,
       hasMeasurements: true,
       hasLocation: true,
@@ -348,12 +347,12 @@ function sampleLeads() {
       name: "Lize",
       phone: "084 333 3333",
       source: "LinkedIn",
-      jobType: "Premium home steel feature",
+      jobType: "Custom project",
       area: "Central",
       urgency: "This month",
       propertyType: "Residential",
       budget: "R20,000+",
-      message: "Looking for a custom wine storage and steel/glass divider concept.",
+      message: "Looking for a custom project estimate with reference photos and a flexible deadline.",
       hasPhotos: false,
       hasMeasurements: false,
       hasLocation: true,
@@ -377,30 +376,35 @@ function sampleLeads() {
 
 function makePosts(service) {
   const base = {
-    "Security gates and fencing": {
-      pain: "a gate that sticks, a weak fence line, or an entrance that no longer feels secure",
-      proof: "proper steelwork, strong fixing points, and a clean finish",
-      cta: "Send photos of the opening or damaged section for a no-obligation estimate.",
+    "Home service quotes": {
+      pain: "a job that needs a clear price before you commit",
+      proof: "fast intake, the right questions, and a quote based on real site details",
+      cta: "Send photos, rough measurements, and your area for a no-obligation estimate.",
     },
-    "Welding repair and restoration": {
-      pain: "a cracked frame, broken hinge, loose bracket, or failed weld",
-      proof: "practical repair work that restores strength instead of hiding the problem",
-      cta: "Send a close-up photo and your suburb so we can advise the next step.",
+    "Repairs and call-outs": {
+      pain: "a repair that is holding up your home or business",
+      proof: "quick triage, clear next steps, and practical call-out planning",
+      cta: "Send a close-up photo, your location, and how urgent it is.",
     },
-    "Custom steel fabrication": {
-      pain: "a custom steel idea that needs proper fabrication, not off-the-shelf parts",
-      proof: "made-to-fit metalwork for homes, businesses, workshops, and outdoor spaces",
-      cta: "Send a sketch, reference photo, and rough size for an estimate.",
+    "Installation projects": {
+      pain: "an installation that needs proper scoping before the team arrives",
+      proof: "site details, materials, dates, and responsibilities captured up front",
+      cta: "Send site photos, rough dimensions, and your target install date.",
     },
-    "Staircases, railings, and pergolas": {
-      pain: "a staircase, railing, or outdoor structure that must be strong and look good",
-      proof: "steel work built around safety, durability, and the style of the space",
-      cta: "Send photos of the area and approximate measurements.",
+    "Event and rental bookings": {
+      pain: "an event booking where missing details cause last-minute stress",
+      proof: "dates, quantities, venue access, delivery, and deposit notes captured early",
+      cta: "Send your event date, venue, quantity needed, and setup window.",
     },
-    "Premium home and business steelwork": {
-      pain: "a home or business space that needs a premium industrial feature",
-      proof: "custom steel details for storage, dividers, entertainment areas, pergolas, and statement pieces",
-      cta: "Send inspiration photos and the space dimensions to start the estimate.",
+    "Cleaning and restoration": {
+      pain: "a worn, stained, or damaged item that needs the right treatment",
+      proof: "condition photos, material notes, and realistic outcome expectations",
+      cta: "Send photos, material details, and whether pickup or on-site service is needed.",
+    },
+    "Maintenance contracts": {
+      pain: "recurring work that gets forgotten until it becomes expensive",
+      proof: "scheduled checks, reminders, summaries, and invoice follow-through",
+      cta: "Send the sites or assets to maintain and the response time you need.",
     },
   }[service];
 

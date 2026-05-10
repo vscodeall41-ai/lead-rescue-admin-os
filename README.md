@@ -17,9 +17,7 @@ Static prototype of the "Stop Losing Leads" AI admin automation package for exis
 
 ## Open It
 
-Open this file in Chrome:
-
-`C:\Users\richa\Documents\Codex\2026-05-09\can-you-access-my-chrome-browser\ras-metal-lead-rescue\index.html`
+Open `index.html` directly in Chrome, or deploy the folder to Vercel.
 
 No server or API key is required for this version.
 
@@ -27,7 +25,7 @@ No server or API key is required for this version.
 
 Do not sell "AI". Sell the outcome:
 
-> We stop gate, welding, and steelwork enquiries from dying in WhatsApp by replying fast, asking for the right photos/measurements, reactivating old warm leads, and pushing every real enquiry toward a quote or site visit.
+> We stop small-business enquiries from dying in WhatsApp, email, and website forms by replying fast, asking for the right details, reactivating old warm leads, and pushing every real enquiry toward a quote, booking, or site visit.
 
 Core modules:
 
