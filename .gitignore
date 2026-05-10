@@ -4,3 +4,5 @@ ras-metal-leads-*.csv
 *.tmp
 *.log
 node_modules/
+
+.vercel
