@@ -2,6 +2,8 @@
 
 Project: Lead Rescue Admin OS
 
+Linear project: https://linear.app/rmdza/project/lead-rescue-admin-os-58600640f4c5
+
 Goal: turn the static proof-of-concept into a sellable "stop losing leads" admin automation package for existing small businesses.
 
 ## Milestone 1 - Go Live Foundation
@@ -17,7 +19,7 @@ Goal: turn the static proof-of-concept into a sellable "stop losing leads" admin
    - Acceptance: local repo pushes to GitHub and Vercel is connected to the GitHub repo.
 
 3. Connect Linear, GitHub, and Vercel
-   - Status: Blocked on Linear MCP session refresh and GitHub authentication
+   - Status: Linear project is created; blocked on GitHub authentication and repo push
    - Acceptance: commits and pull requests can reference Linear issue IDs; Vercel deployments are visible from the repo workflow.
 
 ## Milestone 2 - Quote Engine
