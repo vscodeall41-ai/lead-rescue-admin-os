@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lead Rescue Admin OS</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Lead Rescue Admin OS home">
+        <span class="brand-mark">LR</span>
+        <span>
+          <strong>Lead Rescue Admin OS</strong>
+          <small>Small Business Admin OS</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="#intake">Capture</a>
+        <a href="#package">Package</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#content">Content</a>
+        <a href="#playbook">Playbook</a>
+      </nav>
+      <a class="top-action" href="#package">View Package</a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="system-label">AI admin automation package</p>
+          <h1>Stop losing small-business leads to slow replies and admin drift.</h1>
+          <p class="lead">
+            A sellable admin automation system for trades and local service businesses:
+            capture enquiries, triage WhatsApp and email, draft quotes, chase follow-ups,
+            recover unpaid invoices, request reviews, and send the owner a daily summary.
+          </p>
+          <div class="hero-actions">
+            <a class="primary" href="#intake">Capture a lead</a>
+            <button class="secondary" id="loadSampleBtn" type="button">Load sample leads</button>
+          </div>
+          <dl class="quick-facts">
+            <div>
+              <dt>Best-fit jobs</dt>
+              <dd>Local service businesses with quoting, follow-ups, invoices, and WhatsApp admin</dd>
+            </div>
+            <div>
+              <dt>Configured example</dt>
+              <dd>Local trades and service businesses with quote-heavy admin</dd>
+            </div>
+            <div>
+              <dt>Productized sell</dt>
+              <dd>Setup fee plus monthly admin automation support</dd>
+            </div>
+          </dl>
+        </div>
+
+        <aside class="rescue-panel" aria-label="Lead rescue status">
+          <div class="panel-header">
+            <span>Opportunity snapshot</span>
+            <strong id="todayValue">R0</strong>
+          </div>
+          <div class="metric-grid">
+            <article>
+              <small>Lead capture</small>
+              <strong>Website + WhatsApp</strong>
+              <span>Every enquiry gets tracked</span>
+            </article>
+            <article>
+              <small>Admin time leak</small>
+              <strong>Replies + quotes</strong>
+              <span>Drafted from one intake</span>
+            </article>
+            <article>
+              <small>Money recovery</small>
+              <strong>Follow-ups + invoices</strong>
+              <span>Nothing sits forgotten</span>
+            </article>
+            <article>
+              <small>Owner visibility</small>
+              <strong>Daily summary</strong>
+              <span>Hot leads and blocked money</span>
+            </article>
+          </div>
+        </aside>
+      </section>
+
+      <section class="section package-section" id="package">
+        <div class="section-head">
+          <div>
+            <p class="system-label">Productized offer</p>
+            <h2>Sell the admin outcome, not the AI tools.</h2>
+          </div>
+          <p class="section-note">
+            The repeatable package works for welders, restorers, cleaners, landscapers,
+            security installers, builders, venues, repair shops, and other owner-led service
+            businesses that lose money through slow admin.
+          </p>
+        </div>
+        <div class="package-grid">
+          <article class="automation-card">
+            <span>01</span>
+            <h3>Website Form Capture</h3>
+            <p>Turn website, Facebook, LinkedIn, and manual enquiries into one structured lead record.</p>
+          </article>
+          <article class="automation-card">
+            <span>02</span>
+            <h3>WhatsApp / Email Triage</h3>
+            <p>Classify urgency, job type, missing info, and likely value before the owner replies.</p>
+          </article>
+          <article class="automation-card">
+            <span>03</span>
+            <h3>Quote Drafting</h3>
+            <p>Generate the reply, quote evidence checklist, and site-visit decision from one intake.</p>
+          </article>
+          <article class="automation-card">
+            <span>04</span>
+            <h3>Follow-Up Reminders</h3>
+            <p>Recover warm leads that need photos, measurements, quote approval, or a site visit.</p>
+          </article>
+          <article class="automation-card">
+            <span>05</span>
+            <h3>Invoice Chasing</h3>
+            <p>Track deposits, balances, overdue invoices, and polite payment reminders.</p>
+          </article>
+          <article class="automation-card">
+            <span>06</span>
+            <h3>Review Requests</h3>
+            <p>After completion, send a simple review request and collect before/after proof.</p>
+          </article>
+          <article class="automation-card">
+            <span>07</span>
+            <h3>Daily Owner Summary</h3>
+            <p>One daily list: hot leads, replies due, site visits, quotes waiting, and money blocked.</p>
+          </article>
+          <article class="automation-card highlighted">
+            <span>Sell</span>
+            <h3>Stop Losing Leads Package</h3>
+            <p>Setup: R3,500-R12,000. Monthly: R750-R2,500 depending on channels and support.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section two-column" id="intake">
+        <div>
+          <p class="system-label">Configured proof case</p>
+          <h2>Qualify a real service enquiry in under two minutes.</h2>
+          <p>
+            The form below turns a WhatsApp, Facebook, LinkedIn, or phone enquiry into a scored
+            lead with the next reply, evidence checklist, follow-up timing, and recovery status.
+          </p>
+          <div class="risk-note">
+            <strong>Compliance note:</strong>
+            Anything legally sensitive, unsafe, unclear, or outside the normal service offer should
+            be routed to manual owner review instead of automated promotion.
+          </div>
+        </div>
+
+        <form class="intake-card" id="leadForm">
+          <div class="form-grid">
+            <label>
+              Customer name
+              <input name="name" placeholder="e.g. Marius" required />
+            </label>
+            <label>
+              Phone / WhatsApp
+              <input name="phone" placeholder="e.g. 082 000 0000" required />
+            </label>
+            <label>
+              Source
+              <select name="source">
+                <option>WhatsApp</option>
+                <option>Facebook</option>
+                <option>LinkedIn</option>
+                <option>Google Business</option>
+                <option>Referral</option>
+                <option>Phone call</option>
+              </select>
+            </label>
+            <label>
+              Job type
+              <select name="jobType">
+                <option>Security gate or fence</option>
+                <option>Welding repair</option>
+                <option>Custom fabrication</option>
+                <option>Staircase / railing</option>
+                <option>Pergola / outdoor steelwork</option>
+                <option>Industrial equipment welding</option>
+                <option>Premium home steel feature</option>
+                <option>Manual review item</option>
+              </select>
+            </label>
+            <label>
+              Area / suburb
+              <input name="area" placeholder="e.g. Northside" />
+            </label>
+            <label>
+              Urgency
+              <select name="urgency">
+                <option>Emergency / today</option>
+                <option>This week</option>
+                <option>This month</option>
+                <option>Planning only</option>
+              </select>
+            </label>
+            <label>
+              Property type
+              <select name="propertyType">
+                <option>Residential</option>
+                <option>Commercial</option>
+                <option>Industrial</option>
+                <option>Body corporate / estate</option>
+              </select>
+            </label>
+            <label>
+              Estimated budget
+              <select name="budget">
+                <option>Unknown</option>
+                <option>Under R2,500</option>
+                <option>R2,500 - R7,500</option>
+                <option>R7,500 - R20,000</option>
+                <option>R20,000+</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Customer message
+            <textarea name="message" rows="5" placeholder="Paste the enquiry or summarize the phone call"></textarea>
+          </label>
+
+          <fieldset class="check-row">
+            <legend>Evidence already received</legend>
+            <label><input type="checkbox" name="hasPhotos" /> Photos or video</label>
+            <label><input type="checkbox" name="hasMeasurements" /> Measurements</label>
+            <label><input type="checkbox" name="hasLocation" /> Exact location</label>
+          </fieldset>
+
+          <button class="primary wide" type="submit">Rescue this lead</button>
+        </form>
+      </section>
+
+      <section class="section result-zone" aria-live="polite">
+        <div class="result-card">
+          <p class="system-label">Generated response</p>
+          <h2 id="resultTitle">No lead selected yet</h2>
+          <p id="resultMeta">Capture a lead to generate the WhatsApp reply, checklist, and follow-up plan.</p>
+          <textarea id="replyBox" rows="8" readonly></textarea>
+          <div class="button-row">
+            <button class="secondary" id="copyReplyBtn" type="button">Copy reply</button>
+            <a class="secondary" id="whatsappLink" target="_blank" rel="noreferrer" href="https://wa.me/27655554433">Open WhatsApp</a>
+          </div>
+        </div>
+        <div class="result-card">
+          <p class="system-label">Quote checklist</p>
+          <ul class="checklist" id="quoteChecklist">
+            <li>Job type</li>
+            <li>Photos</li>
+            <li>Measurements</li>
+            <li>Location</li>
+            <li>Site access</li>
+          </ul>
+        </div>
+        <div class="result-card">
+          <p class="system-label">Follow-up sequence</p>
+          <ol class="timeline" id="followupPlan">
+            <li>Reply within 5 minutes.</li>
+            <li>Ask for photos and measurements.</li>
+            <li>Book call or site visit.</li>
+          </ol>
+        </div>
+        <div class="result-card owner-summary">
+          <p class="system-label">Daily owner summary</p>
+          <h2>Today’s admin brief</h2>
+          <textarea id="summaryBox" rows="8" readonly></textarea>
+          <button class="secondary" id="copySummaryBtn" type="button">Copy summary</button>
+        </div>
+      </section>
+
+      <section class="section" id="pipeline">
+        <div class="section-head">
+          <div>
+            <p class="system-label">Pipeline</p>
+            <h2>Every lead gets a next action.</h2>
+          </div>
+          <div class="button-row">
+            <button class="secondary" id="exportBtn" type="button">Export CSV</button>
+            <button class="danger" id="clearBtn" type="button">Clear saved leads</button>
+          </div>
+        </div>
+        <div class="pipeline" id="pipelineList"></div>
+      </section>
+
+      <section class="section content-lab" id="content">
+        <div>
+          <p class="system-label">Review and content automation</p>
+          <h2>Turn completed work and old posters into enquiries and reviews.</h2>
+          <p>
+            Choose a service and generate short copy for WhatsApp Status, Facebook, LinkedIn,
+            and Google Business. The same system can request reviews after completed jobs.
+          </p>
+        </div>
+        <div class="content-controls">
+          <label>
+            Service focus
+            <select id="contentService">
+              <option>Security gates and fencing</option>
+              <option>Welding repair and restoration</option>
+              <option>Custom steel fabrication</option>
+              <option>Staircases, railings, and pergolas</option>
+              <option>Premium home and business steelwork</option>
+            </select>
+          </label>
+          <button class="primary" id="generateContentBtn" type="button">Generate post pack</button>
+        </div>
+        <div class="post-grid" id="postGrid"></div>
+      </section>
+
+      <section class="section playbook" id="playbook">
+        <p class="system-label">Existing business operating plan</p>
+        <h2>Seven-day revenue recovery sprint for an existing small business.</h2>
+        <div class="steps">
+          <article>
+            <strong>Day 1</strong>
+            <p>Audit existing WhatsApp, Facebook, LinkedIn, and phone enquiries for missed follow-ups.</p>
+          </article>
+          <article>
+            <strong>Day 2</strong>
+            <p>Post three focused offers using existing images and direct WhatsApp CTA.</p>
+          </article>
+          <article>
+            <strong>Day 3</strong>
+            <p>Reactivate old quotes and warm contacts before cold outreach.</p>
+          </article>
+          <article>
+            <strong>Day 4</strong>
+            <p>Run every new and old reply through this console and push for photos, measurements, and site visit.</p>
+          </article>
+          <article>
+            <strong>Day 5</strong>
+            <p>Follow up every warm lead with one clear next step and no-obligation estimate.</p>
+          </article>
+          <article>
+            <strong>Day 6</strong>
+            <p>Publish one trust post: safety, reliability, proof of work, and local availability.</p>
+          </article>
+          <article>
+            <strong>Day 7</strong>
+            <p>Measure recovered leads, booked site visits, quoted value, and jobs won.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js?v=admin-package-3"></script>
+  </body>
+</html>
