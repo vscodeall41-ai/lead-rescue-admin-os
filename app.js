@@ -1,6 +1,6 @@
 const CONTACT = {
-  whatsapp: "27000000000",
-  officeWhatsapp: "27000000001",
+  whatsapp: "27612959755",
+  officeWhatsapp: "27612959755",
   email: "owner@example.com",
   area: "the service area",
   businessName: "the business",
