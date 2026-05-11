@@ -115,6 +115,32 @@ a {
   color: var(--text);
 }
 
+.profile-switch {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.profile-switch a {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  padding: 0 0.7rem;
+  color: var(--muted);
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.profile-switch a.active {
+  color: #111;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+}
+
 .top-action,
 .primary,
 .secondary,
@@ -664,6 +690,10 @@ textarea:focus {
   .nav {
     overflow-x: auto;
     padding-bottom: 0.2rem;
+  }
+
+  .profile-switch {
+    overflow-x: auto;
   }
 
   .top-action {

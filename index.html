@@ -9,10 +9,10 @@
   <body>
     <header class="topbar">
       <a class="brand" href="#top" aria-label="Lead Rescue Admin OS home">
-        <span class="brand-mark">LR</span>
+        <span class="brand-mark" id="brandMark">LR</span>
         <span>
-          <strong>Lead Rescue Admin OS</strong>
-          <small>Small Business Admin OS</small>
+          <strong id="brandName">Lead Rescue Admin OS</strong>
+          <small id="brandSubline">Small Business Admin OS</small>
         </span>
       </a>
       <nav class="nav" aria-label="Primary navigation">
@@ -22,15 +22,16 @@
         <a href="#content">Content</a>
         <a href="#playbook">Playbook</a>
       </nav>
+      <div class="profile-switch" id="profileSwitch" aria-label="Profile switch"></div>
       <a class="top-action" href="#package">View Package</a>
     </header>
 
     <main id="top">
       <section class="hero">
         <div class="hero-copy">
-          <p class="system-label">AI admin automation package</p>
-          <h1>Stop losing small-business leads to slow replies and admin drift.</h1>
-          <p class="lead">
+          <p class="system-label" id="heroLabel">AI admin automation package</p>
+          <h1 id="heroHeadline">Stop losing small-business leads to slow replies and admin drift.</h1>
+          <p class="lead" id="heroLead">
             A sellable admin automation system for trades and local service businesses:
             capture enquiries, triage WhatsApp and email, draft quotes, chase follow-ups,
             recover unpaid invoices, request reviews, and send the owner a daily summary.
@@ -42,11 +43,11 @@
           <dl class="quick-facts">
             <div>
               <dt>Best-fit jobs</dt>
-              <dd>Local service businesses with quoting, follow-ups, invoices, and WhatsApp admin</dd>
+              <dd id="bestFitCopy">Local service businesses with quoting, follow-ups, invoices, and WhatsApp admin</dd>
             </div>
             <div>
               <dt>Configured example</dt>
-              <dd>Local trades and service businesses with quote-heavy admin</dd>
+              <dd id="configuredExampleCopy">Local trades and service businesses with quote-heavy admin</dd>
             </div>
             <div>
               <dt>Productized sell</dt>
@@ -91,7 +92,7 @@
             <p class="system-label">Productized offer</p>
             <h2>Sell the admin outcome, not the AI tools.</h2>
           </div>
-          <p class="section-note">
+          <p class="section-note" id="packageNote">
             The repeatable package works for welders, restorers, cleaners, landscapers,
             security installers, builders, venues, repair shops, and other owner-led service
             businesses that lose money through slow admin.
@@ -143,7 +144,7 @@
 
       <section class="section two-column" id="intake">
         <div>
-          <p class="system-label">Configured proof case</p>
+          <p class="system-label" id="intakeLabel">Configured proof case</p>
           <h2>Qualify a real service enquiry in under two minutes.</h2>
           <p>
             The form below turns a WhatsApp, Facebook, LinkedIn, or phone enquiry into a scored
@@ -265,7 +266,7 @@
           <textarea id="replyBox" rows="8" readonly></textarea>
           <div class="button-row">
             <button class="secondary" id="copyReplyBtn" type="button">Copy reply</button>
-            <a class="secondary" id="whatsappLink" target="_blank" rel="noreferrer" href="https://wa.me/27612959755">Open WhatsApp</a>
+            <a class="secondary" id="whatsappLink" target="_blank" rel="noreferrer" href="#intake">Open WhatsApp</a>
           </div>
         </div>
         <div class="result-card result-wide">
@@ -382,6 +383,7 @@
       </section>
     </main>
 
-    <script src="./app.js?v=quote-engine-1"></script>
+    <script src="./profiles.js?v=profile-system-1"></script>
+    <script src="./app.js?v=profile-system-1"></script>
   </body>
 </html>

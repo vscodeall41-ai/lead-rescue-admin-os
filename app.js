@@ -1,13 +1,24 @@
-const CONTACT = {
-  whatsapp: "27612959755",
-  officeWhatsapp: "27612959755",
-  email: "owner@example.com",
-  area: "the service area",
-  businessName: "the business",
-  ownerName: "the owner",
+const PROFILES = window.LEAD_RESCUE_PROFILES || {};
+const requestedProfile = new URLSearchParams(window.location.search).get("profile") || "generic";
+const ACTIVE_PROFILE = PROFILES[requestedProfile] || PROFILES.generic || {
+  id: "generic",
+  label: "Generic demo",
+  brandMark: "LR",
+  appName: "Lead Rescue Admin OS",
+  subline: "Small Business Admin OS",
+  contact: {
+    whatsapp: "",
+    whatsappLabel: "your business WhatsApp",
+    email: "owner@example.com",
+    area: "the service area",
+    businessName: "the business",
+    ownerName: "the owner",
+  },
 };
+const PROFILE_ID = ACTIVE_PROFILE.id || "generic";
+const CONTACT = ACTIVE_PROFILE.contact || {};
 
-const STORAGE_KEY = "lead-rescue-admin-os-leads-v1";
+const STORAGE_KEY = `lead-rescue-admin-os-leads-v1:${PROFILE_ID}`;
 
 const serviceChecklists = {
   "Home service quote": [
@@ -68,6 +79,8 @@ const serviceChecklists = {
   ],
 };
 
+Object.assign(serviceChecklists, ACTIVE_PROFILE.serviceChecklists || {});
+
 const leadForm = document.querySelector("#leadForm");
 const resultTitle = document.querySelector("#resultTitle");
 const resultMeta = document.querySelector("#resultMeta");
@@ -80,6 +93,71 @@ const pipelineList = document.querySelector("#pipelineList");
 const todayValue = document.querySelector("#todayValue");
 const whatsappLink = document.querySelector("#whatsappLink");
 const summaryBox = document.querySelector("#summaryBox");
+const jobTypeSelect = document.querySelector('select[name="jobType"]');
+const contentServiceSelect = document.querySelector("#contentService");
+
+function setText(selector, value) {
+  const element = document.querySelector(selector);
+  if (element && value) element.textContent = value;
+}
+
+function replaceOptions(select, values) {
+  if (!select || !values.length) return;
+  select.replaceChildren(
+    ...values.map((value) => {
+      const option = document.createElement("option");
+      option.textContent = value;
+      option.value = value;
+      return option;
+    })
+  );
+}
+
+function contactWhatsappLabel() {
+  return CONTACT.whatsappLabel || CONTACT.whatsapp || "your business WhatsApp";
+}
+
+function profileServices() {
+  return ACTIVE_PROFILE.serviceOrder || Object.keys(serviceChecklists);
+}
+
+function configureProfileUi() {
+  document.body.dataset.profile = PROFILE_ID;
+  document.title = `${ACTIVE_PROFILE.appName || "Lead Rescue Admin OS"} | Lead Rescue Admin OS`;
+
+  setText("#brandMark", ACTIVE_PROFILE.brandMark);
+  setText("#brandName", ACTIVE_PROFILE.appName);
+  setText("#brandSubline", ACTIVE_PROFILE.subline);
+  setText("#heroLabel", ACTIVE_PROFILE.heroLabel);
+  setText("#heroHeadline", ACTIVE_PROFILE.heroHeadline);
+  setText("#heroLead", ACTIVE_PROFILE.heroLead);
+  setText("#bestFitCopy", ACTIVE_PROFILE.bestFit);
+  setText("#configuredExampleCopy", ACTIVE_PROFILE.configuredExample);
+  setText("#packageNote", ACTIVE_PROFILE.packageNote);
+  setText("#intakeLabel", ACTIVE_PROFILE.intakeLabel);
+
+  replaceOptions(jobTypeSelect, profileServices());
+  replaceOptions(contentServiceSelect, Object.keys(contentServices()));
+
+  if (CONTACT.whatsapp) {
+    whatsappLink.href = `https://wa.me/${CONTACT.whatsapp}`;
+  } else {
+    whatsappLink.href = "#intake";
+  }
+
+  const profileSwitch = document.querySelector("#profileSwitch");
+  if (profileSwitch && Object.keys(PROFILES).length > 1) {
+    profileSwitch.replaceChildren(
+      ...Object.values(PROFILES).map((profile) => {
+        const link = document.createElement("a");
+        link.href = profile.id === "generic" ? "./" : `./?profile=${encodeURIComponent(profile.id)}`;
+        link.textContent = profile.label || profile.appName || profile.id;
+        link.className = profile.id === PROFILE_ID ? "active" : "";
+        return link;
+      })
+    );
+  }
+}
 
 function loadLeads() {
   try {
@@ -109,7 +187,7 @@ function localDateStamp(date = new Date()) {
 }
 
 function estimateValue(jobType, budget) {
-  const base = {
+  const base = (ACTIVE_PROFILE.estimateBase || {})[jobType] || {
     "Home service quote": 6500,
     "Repair or call-out": 2500,
     "Installation project": 14500,
@@ -174,6 +252,8 @@ const serviceProfiles = {
   },
 };
 
+Object.assign(serviceProfiles, ACTIVE_PROFILE.serviceProfiles || {});
+
 function profileFor(jobType) {
   return serviceProfiles[jobType] || serviceProfiles["Custom project"];
 }
@@ -228,6 +308,10 @@ function estimateBand(lead) {
   return `${currency(low)} - ${currency(high)} subject to final scope and owner approval`;
 }
 
+function isManualReviewService(jobType) {
+  return jobType === "Manual review item" || (ACTIVE_PROFILE.manualReviewServices || []).includes(jobType);
+}
+
 function scoreLead(data) {
   let score = 35;
   if (data.urgency === "Emergency / today") score += 25;
@@ -237,13 +321,14 @@ function scoreLead(data) {
   if (data.hasPhotos) score += 10;
   if (data.hasMeasurements) score += 8;
   if (data.hasLocation) score += 6;
-  if (["Repair or call-out", "Installation project", "Maintenance contract"].includes(data.jobType)) score += 8;
-  if (data.jobType === "Manual review item") score = 10;
+  const highIntentServices = ACTIVE_PROFILE.highIntentServices || ["Repair or call-out", "Installation project", "Maintenance contract"];
+  if (highIntentServices.includes(data.jobType)) score += 8;
+  if (isManualReviewService(data.jobType)) score = 10;
   return Math.max(0, Math.min(100, score));
 }
 
 function priority(score, jobType) {
-  if (jobType === "Manual review item") return "Manual review";
+  if (isManualReviewService(jobType)) return "Manual review";
   if (score >= 78) return "Hot";
   if (score >= 58) return "Warm";
   return "Needs nurture";
@@ -294,7 +379,7 @@ function makeReply(lead) {
     ? "Because this sounds urgent, I will treat it as a priority."
     : "I can help you work out the practical next step.";
 
-  return `Hi ${lead.name}, thanks for contacting us. We help with ${lead.jobType.toLowerCase()} in ${CONTACT.area}. ${urgencyText} ${missingText}\n\nTo quote properly, I need to confirm the size, fixing points/material, finish, and access to the site. Once I have that, I can advise whether we should quote from photos or arrange a site visit.\n\n${CONTACT.ownerName}\nWhatsApp: ${CONTACT.whatsapp}`;
+  return `Hi ${lead.name}, thanks for contacting ${CONTACT.businessName}. We help with ${lead.jobType.toLowerCase()} in ${CONTACT.area}. ${urgencyText} ${missingText}\n\nTo quote properly, I need to confirm the size, fixing points/material, finish, and access to the site. Once I have that, I can advise whether we should quote from photos or arrange a site visit.\n\n${CONTACT.ownerName}\nWhatsApp: ${contactWhatsappLabel()}`;
 }
 
 function makeIntakeBrief(lead) {
@@ -419,6 +504,7 @@ function leadFromForm(formData) {
   const score = scoreLead(data);
   return {
     ...data,
+    profile: PROFILE_ID,
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     score,
@@ -498,7 +584,7 @@ function renderOwnerSummary(leads = loadLeads(), total = leads.reduce((sum, lead
   const top = hot[0] || warm[0] || leads[0];
 
   summaryBox.value = [
-    `Small business admin summary - ${localDateStamp()}`,
+    `${CONTACT.businessName || "Small business"} admin summary - ${localDateStamp()}`,
     ``,
     `Open lead value: ${currency(total)}`,
     `Hot leads: ${hot.length}`,
@@ -518,6 +604,7 @@ function renderOwnerSummary(leads = loadLeads(), total = leads.reduce((sum, lead
 function exportCsv() {
   const leads = loadLeads();
   const headers = [
+    "profile",
     "createdAt",
     "name",
     "phone",
@@ -561,7 +648,7 @@ function exportCsv() {
 }
 
 function sampleLeads() {
-  const samples = [
+  const sampleSource = ACTIVE_PROFILE.samples || [
     {
       name: "Nadia",
       phone: "082 111 1111",
@@ -613,10 +700,12 @@ function sampleLeads() {
       hasMeasurements: false,
       hasLocation: true,
     },
-  ].map((data) => {
+  ];
+  const samples = sampleSource.map((data) => {
     const score = scoreLead(data);
     return {
       ...data,
+      profile: PROFILE_ID,
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       score,
@@ -630,39 +719,46 @@ function sampleLeads() {
   renderSelectedLead(samples[0]);
 }
 
+const defaultContentServices = {
+  "Home service quotes": {
+    pain: "a job that needs a clear price before you commit",
+    proof: "fast intake, the right questions, and a quote based on real site details",
+    cta: "Send photos, rough measurements, and your area for a no-obligation estimate.",
+  },
+  "Repairs and call-outs": {
+    pain: "a repair that is holding up your home or business",
+    proof: "quick triage, clear next steps, and practical call-out planning",
+    cta: "Send a close-up photo, your location, and how urgent it is.",
+  },
+  "Installation projects": {
+    pain: "an installation that needs proper scoping before the team arrives",
+    proof: "site details, materials, dates, and responsibilities captured up front",
+    cta: "Send site photos, rough dimensions, and your target install date.",
+  },
+  "Event and rental bookings": {
+    pain: "an event booking where missing details cause last-minute stress",
+    proof: "dates, quantities, venue access, delivery, and deposit notes captured early",
+    cta: "Send your event date, venue, quantity needed, and setup window.",
+  },
+  "Cleaning and restoration": {
+    pain: "a worn, stained, or damaged item that needs the right treatment",
+    proof: "condition photos, material notes, and realistic outcome expectations",
+    cta: "Send photos, material details, and whether pickup or on-site service is needed.",
+  },
+  "Maintenance contracts": {
+    pain: "recurring work that gets forgotten until it becomes expensive",
+    proof: "scheduled checks, reminders, summaries, and invoice follow-through",
+    cta: "Send the sites or assets to maintain and the response time you need.",
+  },
+};
+
+function contentServices() {
+  return ACTIVE_PROFILE.contentServices || defaultContentServices;
+}
+
 function makePosts(service) {
-  const base = {
-    "Home service quotes": {
-      pain: "a job that needs a clear price before you commit",
-      proof: "fast intake, the right questions, and a quote based on real site details",
-      cta: "Send photos, rough measurements, and your area for a no-obligation estimate.",
-    },
-    "Repairs and call-outs": {
-      pain: "a repair that is holding up your home or business",
-      proof: "quick triage, clear next steps, and practical call-out planning",
-      cta: "Send a close-up photo, your location, and how urgent it is.",
-    },
-    "Installation projects": {
-      pain: "an installation that needs proper scoping before the team arrives",
-      proof: "site details, materials, dates, and responsibilities captured up front",
-      cta: "Send site photos, rough dimensions, and your target install date.",
-    },
-    "Event and rental bookings": {
-      pain: "an event booking where missing details cause last-minute stress",
-      proof: "dates, quantities, venue access, delivery, and deposit notes captured early",
-      cta: "Send your event date, venue, quantity needed, and setup window.",
-    },
-    "Cleaning and restoration": {
-      pain: "a worn, stained, or damaged item that needs the right treatment",
-      proof: "condition photos, material notes, and realistic outcome expectations",
-      cta: "Send photos, material details, and whether pickup or on-site service is needed.",
-    },
-    "Maintenance contracts": {
-      pain: "recurring work that gets forgotten until it becomes expensive",
-      proof: "scheduled checks, reminders, summaries, and invoice follow-through",
-      cta: "Send the sites or assets to maintain and the response time you need.",
-    },
-  }[service];
+  const services = contentServices();
+  const base = services[service] || Object.values(services)[0];
 
   return [
     {
@@ -742,5 +838,6 @@ document.querySelector("#clearBtn").addEventListener("click", () => {
   }
 });
 
+configureProfileUi();
 renderPipeline();
 renderPosts();

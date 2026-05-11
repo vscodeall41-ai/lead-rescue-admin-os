@@ -21,6 +21,15 @@ Open `index.html` directly in Chrome, or deploy the folder to Vercel.
 
 No server or API key is required for this version.
 
+## Profiles
+
+The app keeps the generic Lead Rescue engine separate from business-specific configuration.
+
+- Generic demo: `/`
+- Ras Metal Dynamics profile: `/?profile=ras-metal-dynamics`
+
+Business-specific services, contact details, sample leads, quote assumptions, and content prompts live in `profiles.js`.
+
 ## Sellable Package
 
 Do not sell "AI". Sell the outcome:

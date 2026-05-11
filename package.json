@@ -4,6 +4,6 @@
   "private": true,
   "description": "Static prototype for the Stop Losing Leads AI admin automation package.",
   "scripts": {
-    "check": "node --check app.js"
+    "check": "node --check app.js && node --check profiles.js"
   }
 }
