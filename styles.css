@@ -455,12 +455,20 @@ textarea:focus {
 
 .result-zone {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr 0.85fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
 .result-card {
   min-height: 17rem;
+}
+
+.result-wide {
+  min-height: 21rem;
+}
+
+.compact-card {
+  min-height: auto;
 }
 
 .owner-summary {
@@ -474,6 +482,10 @@ textarea:focus {
 
 .result-card textarea {
   margin: 0.75rem 0;
+}
+
+.result-card > .secondary {
+  width: 100%;
 }
 
 .checklist,

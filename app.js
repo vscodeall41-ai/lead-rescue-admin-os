@@ -72,6 +72,8 @@ const leadForm = document.querySelector("#leadForm");
 const resultTitle = document.querySelector("#resultTitle");
 const resultMeta = document.querySelector("#resultMeta");
 const replyBox = document.querySelector("#replyBox");
+const briefBox = document.querySelector("#briefBox");
+const quoteDraftBox = document.querySelector("#quoteDraftBox");
 const quoteChecklist = document.querySelector("#quoteChecklist");
 const followupPlan = document.querySelector("#followupPlan");
 const pipelineList = document.querySelector("#pipelineList");
@@ -129,6 +131,103 @@ function estimateValue(jobType, budget) {
   return Math.round(base * budgetBoost);
 }
 
+const serviceProfiles = {
+  "Home service quote": {
+    scope: "Assess the requested home-service work, confirm the site conditions, and prepare a practical quote based on photos, measurements, and access details.",
+    prep: "Confirm photos, measurements, property access, preferred timing, materials or finish expectations, and whether a site visit is needed.",
+    exclusions: "Hidden damage, extra work discovered on site, specialist permits, municipal approvals, and material changes after approval.",
+  },
+  "Repair or call-out": {
+    scope: "Diagnose the fault, restore safe working condition where possible, and advise whether replacement parts or a follow-up visit are needed.",
+    prep: "Confirm urgency, downtime impact, access window, close-up photos, prior repair attempts, and whether the item can be safely worked on.",
+    exclusions: "Parts not visible in the photos, unrelated faults, emergency after-hours surcharge, and replacement components not approved by the customer.",
+  },
+  "Installation project": {
+    scope: "Plan and complete an installation or replacement based on site photos, dimensions, product/material choice, and agreed installation timing.",
+    prep: "Confirm site dimensions, services or obstacles, access, delivery needs, finish choice, target date, and decision maker.",
+    exclusions: "Electrical/plumbing alterations, structural changes, hidden substrate issues, and scope changes after the quote is accepted.",
+  },
+  "Event or rental booking": {
+    scope: "Prepare a booking estimate for the requested event/rental items, including quantities, date, setup window, venue access, and collection needs.",
+    prep: "Confirm event date, venue address, setup and collection times, quantities, delivery access, deposit status, and onsite contact.",
+    exclusions: "Weather-related changes, venue restrictions not disclosed, extra delivery trips, late collection, damages, and add-ons after confirmation.",
+  },
+  "Cleaning or restoration": {
+    scope: "Assess the item, room, or surface condition and prepare a service estimate based on material, damage level, desired result, and access.",
+    prep: "Confirm photos, material type, stains or damage, pickup/delivery or onsite work, expected outcome, and deadline.",
+    exclusions: "Pre-existing damage, guaranteed perfect restoration where material is compromised, undisclosed stains, and extra areas added on site.",
+  },
+  "Maintenance contract": {
+    scope: "Scope recurring service coverage, response times, reporting expectations, and pricing for the sites/assets that need ongoing maintenance.",
+    prep: "Confirm sites, recurring tasks, response time, service frequency, current pain points, reporting needs, and billing process.",
+    exclusions: "Emergency work outside agreed response terms, parts/materials not included in the contract, and additional sites not listed.",
+  },
+  "Custom project": {
+    scope: "Translate the custom request into a clear scope, assumptions, estimate band, and next-step checklist before the owner commits to a final quote.",
+    prep: "Confirm reference photos, dimensions, desired outcome, budget range, deadline, approval process, and any non-negotiables.",
+    exclusions: "Design revisions beyond the agreed concept, material changes, engineering/sign-off requirements, and work outside the approved brief.",
+  },
+  "Manual review item": {
+    scope: "Hold the request for owner review before quoting, promotion, or commitment.",
+    prep: "Confirm legality, safety risk, platform policy, intended use, and whether the business should accept the enquiry at all.",
+    exclusions: "Automated quote, automated promotion, or any commitment before owner approval.",
+  },
+};
+
+function profileFor(jobType) {
+  return serviceProfiles[jobType] || serviceProfiles["Custom project"];
+}
+
+function missingEvidence(lead) {
+  const missing = [];
+  if (!lead.hasPhotos) missing.push("photos or video");
+  if (!lead.hasMeasurements) missing.push("rough measurements");
+  if (!lead.hasLocation) missing.push("exact suburb or location pin");
+  if (!lead.message || !lead.message.trim()) missing.push("customer message or call summary");
+  if (!lead.accessNotes || !lead.accessNotes.trim()) missing.push("site, access, or special notes");
+  if (!lead.targetDate || !lead.targetDate.trim()) missing.push("target date or timing expectation");
+  if (lead.budget === "Unknown") missing.push("budget range or decision threshold");
+  return missing;
+}
+
+function quoteReadiness(lead) {
+  if (lead.priority === "Manual review") {
+    return {
+      label: "Manual review",
+      score: 0,
+      reason: "This enquiry should not be quoted automatically.",
+    };
+  }
+
+  let score = 25;
+  if (lead.hasPhotos) score += 20;
+  if (lead.hasMeasurements) score += 18;
+  if (lead.hasLocation) score += 15;
+  if (lead.message && lead.message.trim()) score += 12;
+  if (lead.accessNotes && lead.accessNotes.trim()) score += 8;
+  if (lead.targetDate && lead.targetDate.trim()) score += 7;
+  if (lead.budget !== "Unknown") score += 10;
+
+  const label = score >= 80 ? "Quote-ready" : score >= 58 ? "Needs owner check" : "Needs more info";
+  const reason = {
+    "Quote-ready": "Enough detail exists for a provisional owner-reviewed quote.",
+    "Needs owner check": "The owner can draft a reply, but the final quote should wait for missing details.",
+    "Needs more info": "The enquiry needs more evidence before price or timing can be trusted.",
+  }[label];
+
+  return { label, score: Math.min(score, 100), reason };
+}
+
+function estimateBand(lead) {
+  if (lead.priority === "Manual review" || lead.estimate <= 0) return "Owner review required before any price guidance.";
+  const readiness = quoteReadiness(lead);
+  const lowMultiplier = readiness.label === "Quote-ready" ? 0.85 : 0.7;
+  const highMultiplier = readiness.label === "Quote-ready" ? 1.2 : 1.45;
+  const low = Math.max(500, Math.round((lead.estimate * lowMultiplier) / 100) * 100);
+  const high = Math.max(low + 500, Math.round((lead.estimate * highMultiplier) / 100) * 100);
+  return `${currency(low)} - ${currency(high)} subject to final scope and owner approval`;
+}
+
 function scoreLead(data) {
   let score = 35;
   if (data.urgency === "Emergency / today") score += 25;
@@ -168,6 +267,15 @@ function followups(lead) {
   ];
 }
 
+function nextAction(lead) {
+  if (lead.priority === "Manual review") return "Owner review before any quote or reply commitment.";
+  const missing = missingEvidence(lead);
+  if (lead.urgency === "Emergency / today") return "Call or WhatsApp now, confirm location/access, and decide if same-day service is possible.";
+  if (missing.length) return `Request ${missing.slice(0, 3).join(", ")} before final quote.`;
+  if (quoteReadiness(lead).label === "Quote-ready") return "Owner reviews the quote draft and sends a firm next step.";
+  return "Send the reply, confirm scope, and schedule a quote follow-up.";
+}
+
 function makeReply(lead) {
   if (lead.priority === "Manual review") {
     return `Hi ${lead.name}, thanks for the enquiry. I need to review this one directly before confirming whether we can assist. Please send clear photos, your intended use, and your location. I will come back to you once I have checked the details.`;
@@ -187,6 +295,112 @@ function makeReply(lead) {
     : "I can help you work out the practical next step.";
 
   return `Hi ${lead.name}, thanks for contacting us. We help with ${lead.jobType.toLowerCase()} in ${CONTACT.area}. ${urgencyText} ${missingText}\n\nTo quote properly, I need to confirm the size, fixing points/material, finish, and access to the site. Once I have that, I can advise whether we should quote from photos or arrange a site visit.\n\n${CONTACT.ownerName}\nWhatsApp: ${CONTACT.whatsapp}`;
+}
+
+function makeIntakeBrief(lead) {
+  const readiness = quoteReadiness(lead);
+  const missing = missingEvidence(lead);
+  const profile = profileFor(lead.jobType);
+
+  return [
+    `LEAD RESCUE INTAKE BRIEF`,
+    `Captured: ${localDateStamp(new Date(lead.createdAt || Date.now()))}`,
+    ``,
+    `Customer`,
+    `- Name: ${lead.name || "Not captured"}`,
+    `- Phone/WhatsApp: ${lead.phone || "Not captured"}`,
+    `- Source: ${lead.source || "Not captured"}`,
+    `- Area: ${lead.area || "Not captured"}`,
+    `- Property type: ${lead.propertyType || "Not captured"}`,
+    ``,
+    `Request`,
+    `- Service type: ${lead.jobType}`,
+    `- Urgency: ${lead.urgency}`,
+    `- Decision stage: ${lead.decisionStage || "Not captured"}`,
+    `- Target date: ${lead.targetDate || "Not captured"}`,
+    `- Budget: ${lead.budget || "Unknown"}`,
+    `- Estimated value: ${currency(lead.estimate)}`,
+    `- Lead priority: ${lead.priority} (${lead.score}/100)`,
+    `- Quote readiness: ${readiness.label} (${readiness.score}/100)`,
+    ``,
+    `Customer message`,
+    `${lead.message || "No customer message captured."}`,
+    ``,
+    `Site/access notes`,
+    `${lead.accessNotes || "No site/access notes captured."}`,
+    ``,
+    `Evidence received`,
+    `- Photos/video: ${lead.hasPhotos ? "Yes" : "No"}`,
+    `- Measurements: ${lead.hasMeasurements ? "Yes" : "No"}`,
+    `- Exact location: ${lead.hasLocation ? "Yes" : "No"}`,
+    ``,
+    `Missing before final quote`,
+    ...(missing.length ? missing.map((item) => `- ${item}`) : ["- Nothing obvious from the intake; owner should still verify assumptions."]),
+    ``,
+    `Service prep focus`,
+    `- ${profile.prep}`,
+    ``,
+    `Recommended next action`,
+    `- ${nextAction(lead)}`,
+  ].join("\n");
+}
+
+function makeQuoteDraft(lead) {
+  const readiness = quoteReadiness(lead);
+  const missing = missingEvidence(lead);
+  const profile = profileFor(lead.jobType);
+
+  if (lead.priority === "Manual review") {
+    return [
+      `QUOTE DRAFT - HOLD FOR OWNER REVIEW`,
+      ``,
+      `This enquiry is marked for manual review. Do not send a price or promise service until the owner has checked legality, safety, and fit with the business offer.`,
+      ``,
+      `Owner review checklist`,
+      `- Confirm the requested work is legal, safe, and within the normal service offer.`,
+      `- Confirm whether the business wants to accept the enquiry.`,
+      `- If accepted, request photos, intended use, location, and timing before quoting.`,
+    ].join("\n");
+  }
+
+  return [
+    `QUOTE DRAFT - OWNER APPROVAL REQUIRED`,
+    ``,
+    `Customer: ${lead.name || "Customer"}`,
+    `Service: ${lead.jobType}`,
+    `Area: ${lead.area || "Not captured"}`,
+    `Urgency: ${lead.urgency}`,
+    `Quote readiness: ${readiness.label} - ${readiness.reason}`,
+    `Estimate guide: ${estimateBand(lead)}`,
+    ``,
+    `Customer-facing draft`,
+    `Hi ${lead.name || "there"}, thanks for the details. Based on what you sent, this looks like a ${lead.jobType.toLowerCase()} request in ${lead.area || "your area"}.`,
+    ``,
+    `Provisional scope: ${profile.scope}`,
+    ``,
+    `At this stage, the estimate guide is ${estimateBand(lead)}. I still need to confirm the final details before this becomes a firm quote.`,
+    ``,
+    missing.length
+      ? `Before I finalize it, please send: ${missing.join(", ")}.`
+      : `I have the key details for an owner-reviewed quote. The next step is to confirm timing, access, and approval to proceed.`,
+    ``,
+    `Assumptions`,
+    `- The request stays within the service type captured above.`,
+    `- Site access is reasonable during the agreed time window.`,
+    `- Photos, measurements, and customer notes are accurate enough for first-pass quoting.`,
+    `- Any material/product choices are still subject to owner confirmation.`,
+    ``,
+    `Exclusions`,
+    `- ${profile.exclusions}`,
+    `- Extra work discovered after arrival or after final approval.`,
+    `- Customer-requested changes after the quote is accepted.`,
+    ``,
+    `Owner approval checklist`,
+    `- Confirm the estimate band is commercially sensible.`,
+    `- Confirm whether this needs a site visit, call-out, pickup, or photo-based quote.`,
+    `- Confirm deposit/payment terms before booking work.`,
+    `- Confirm the next message can be sent to the customer.`,
+  ].join("\n");
 }
 
 function normalizeZaPhone(rawPhone) {
@@ -215,13 +429,16 @@ function leadFromForm(formData) {
 
 function renderSelectedLead(lead) {
   resultTitle.textContent = `${lead.priority}: ${lead.name} - ${lead.jobType}`;
-  resultMeta.textContent = `${lead.source} lead from ${lead.area || "area not captured"} | Score ${lead.score}/100 | Estimated job value ${currency(lead.estimate)}`;
+  const readiness = quoteReadiness(lead);
+  resultMeta.textContent = `${lead.source} lead from ${lead.area || "area not captured"} | Score ${lead.score}/100 | ${readiness.label} | Estimated job value ${currency(lead.estimate)}`;
   const reply = makeReply(lead);
   replyBox.value = reply;
+  briefBox.value = makeIntakeBrief(lead);
+  quoteDraftBox.value = makeQuoteDraft(lead);
   whatsappLink.href = `https://wa.me/${normalizeZaPhone(lead.phone)}?text=${encodeURIComponent(reply)}`;
 
   quoteChecklist.innerHTML = "";
-  (serviceChecklists[lead.jobType] || serviceChecklists["Custom fabrication"]).forEach((item) => {
+  (serviceChecklists[lead.jobType] || serviceChecklists["Custom project"]).forEach((item) => {
     const li = document.createElement("li");
     li.textContent = item;
     quoteChecklist.appendChild(li);
@@ -251,12 +468,14 @@ function renderPipeline() {
     const card = document.createElement("article");
     card.className = "pipeline-card";
     const tagClass = lead.priority === "Hot" ? "hot" : lead.priority === "Warm" ? "good" : lead.priority === "Manual review" ? "warn" : "";
+    const readiness = quoteReadiness(lead);
     card.innerHTML = `
       <div>
         <h3>${lead.name} - ${lead.jobType}</h3>
         <p>${lead.message || "No message captured yet."}</p>
         <div class="pipeline-meta">
           <span class="tag ${tagClass}">${lead.priority}</span>
+          <span class="tag">${readiness.label}</span>
           <span class="tag">${lead.source}</span>
           <span class="tag">${lead.urgency}</span>
           <span class="tag">${lead.area || "No area"}</span>
@@ -298,9 +517,37 @@ function renderOwnerSummary(leads = loadLeads(), total = leads.reduce((sum, lead
 
 function exportCsv() {
   const leads = loadLeads();
-  const headers = ["createdAt", "name", "phone", "source", "jobType", "area", "urgency", "propertyType", "budget", "score", "priority", "estimate", "message"];
+  const headers = [
+    "createdAt",
+    "name",
+    "phone",
+    "source",
+    "jobType",
+    "area",
+    "urgency",
+    "propertyType",
+    "budget",
+    "decisionStage",
+    "targetDate",
+    "score",
+    "priority",
+    "quoteReadiness",
+    "estimate",
+    "hasPhotos",
+    "hasMeasurements",
+    "hasLocation",
+    "message",
+    "accessNotes",
+  ];
   const rows = [headers.join(",")].concat(
-    leads.map((lead) => headers.map((key) => `"${String(lead[key] || "").replace(/"/g, '""')}"`).join(","))
+    leads.map((lead) =>
+      headers
+        .map((key) => {
+          const value = key === "quoteReadiness" ? quoteReadiness(lead).label : lead[key];
+          return `"${String(value || "").replace(/"/g, '""')}"`;
+        })
+        .join(",")
+    )
   );
   const blob = new Blob([rows.join("\n")], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -324,7 +571,10 @@ function sampleLeads() {
       urgency: "This week",
       propertyType: "Residential",
       budget: "R7,500 - R20,000",
+      decisionStage: "Waiting for quote",
+      targetDate: "This week",
       message: "Need a quote for a home service job this week. We have photos and rough measurements.",
+      accessNotes: "Residential driveway access. Customer is available after 16:00.",
       hasPhotos: true,
       hasMeasurements: false,
       hasLocation: true,
@@ -338,7 +588,10 @@ function sampleLeads() {
       urgency: "Emergency / today",
       propertyType: "Commercial",
       budget: "R2,500 - R7,500",
+      decisionStage: "Ready to book",
+      targetDate: "Today",
       message: "A key item failed this morning and the shop needs a same-day call-out.",
+      accessNotes: "Commercial premises. Staff are onsite until 18:00 and can provide access.",
       hasPhotos: true,
       hasMeasurements: true,
       hasLocation: true,
@@ -352,7 +605,10 @@ function sampleLeads() {
       urgency: "This month",
       propertyType: "Residential",
       budget: "R20,000+",
+      decisionStage: "Comparing options",
+      targetDate: "This month",
       message: "Looking for a custom project estimate with reference photos and a flexible deadline.",
+      accessNotes: "Customer wants a polished quote before booking a site visit.",
       hasPhotos: false,
       hasMeasurements: false,
       hasLocation: true,
@@ -459,6 +715,16 @@ leadForm.addEventListener("submit", (event) => {
 document.querySelector("#copyReplyBtn").addEventListener("click", async () => {
   if (!replyBox.value) return;
   await navigator.clipboard.writeText(replyBox.value);
+});
+
+document.querySelector("#copyBriefBtn").addEventListener("click", async () => {
+  if (!briefBox.value) return;
+  await navigator.clipboard.writeText(briefBox.value);
+});
+
+document.querySelector("#copyQuoteDraftBtn").addEventListener("click", async () => {
+  if (!quoteDraftBox.value) return;
+  await navigator.clipboard.writeText(quoteDraftBox.value);
 });
 
 document.querySelector("#copySummaryBtn").addEventListener("click", async () => {

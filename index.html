@@ -222,11 +222,28 @@
                 <option>R20,000+</option>
               </select>
             </label>
+            <label>
+              Decision stage
+              <select name="decisionStage">
+                <option>New enquiry</option>
+                <option>Comparing options</option>
+                <option>Ready to book</option>
+                <option>Waiting for quote</option>
+              </select>
+            </label>
+            <label>
+              Target date
+              <input name="targetDate" placeholder="e.g. This Friday, month-end, flexible" />
+            </label>
           </div>
 
           <label>
             Customer message
             <textarea name="message" rows="5" placeholder="Paste the enquiry or summarize the phone call"></textarea>
+          </label>
+          <label>
+            Site, access, or special notes
+            <textarea name="accessNotes" rows="3" placeholder="Access, parking, opening hours, pickup/delivery, decision maker, constraints"></textarea>
           </label>
 
           <fieldset class="check-row">
@@ -251,7 +268,19 @@
             <a class="secondary" id="whatsappLink" target="_blank" rel="noreferrer" href="https://wa.me/27655554433">Open WhatsApp</a>
           </div>
         </div>
-        <div class="result-card">
+        <div class="result-card result-wide">
+          <p class="system-label">Structured intake brief</p>
+          <h2>Operator-ready brief</h2>
+          <textarea id="briefBox" rows="13" readonly></textarea>
+          <button class="secondary" id="copyBriefBtn" type="button">Copy brief</button>
+        </div>
+        <div class="result-card result-wide">
+          <p class="system-label">Quote draft</p>
+          <h2>Owner approval draft</h2>
+          <textarea id="quoteDraftBox" rows="16" readonly></textarea>
+          <button class="secondary" id="copyQuoteDraftBtn" type="button">Copy quote draft</button>
+        </div>
+        <div class="result-card compact-card">
           <p class="system-label">Quote checklist</p>
           <ul class="checklist" id="quoteChecklist">
             <li>Job type</li>
@@ -261,7 +290,7 @@
             <li>Site access</li>
           </ul>
         </div>
-        <div class="result-card">
+        <div class="result-card compact-card">
           <p class="system-label">Follow-up sequence</p>
           <ol class="timeline" id="followupPlan">
             <li>Reply within 5 minutes.</li>
@@ -353,6 +382,6 @@
       </section>
     </main>
 
-    <script src="./app.js?v=admin-package-3"></script>
+    <script src="./app.js?v=quote-engine-1"></script>
   </body>
 </html>
