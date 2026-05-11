@@ -34,6 +34,29 @@ window.LEAD_RESCUE_PROFILES = {
     heroHeadline: "Turn steelwork enquiries into clean quote briefs and fast WhatsApp follow-ups.",
     heroLead:
       "A tailored lead rescue workflow for welding, fabrication, gates, repairs, and premium steel feature enquiries. It captures the site details, photos, measurements, urgency, assumptions, and next message before the lead gets lost in WhatsApp.",
+    onsiteMedia: {
+      label: "On-site proof",
+      title: "Real welding work, not stock imagery.",
+      intro:
+        "Use these job photos to make the Ras Metal profile feel grounded: active welding, sparks, protective gear, and real site conditions.",
+      images: [
+        {
+          src: "./assets/ras-metal/onsite-welding-3.png",
+          alt: "Ras Metal Dynamics welding on site at an industrial doorway",
+          caption: "On-site welding and repair work",
+        },
+        {
+          src: "./assets/ras-metal/onsite-welding-1.png",
+          alt: "Ras Metal Dynamics welder working on a steel frame",
+          caption: "Fabrication and steel frame work",
+        },
+        {
+          src: "./assets/ras-metal/onsite-welding-2.png",
+          alt: "Ras Metal Dynamics welding a vertical steel beam",
+          caption: "Structural steelwork and access jobs",
+        },
+      ],
+    },
     bestFit: "Welding, fabrication, gate, repair, and custom steel enquiries",
     configuredExample: "Ras Metal Dynamics quote intake and follow-up workflow",
     packageNote:

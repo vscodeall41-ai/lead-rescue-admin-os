@@ -302,6 +302,21 @@ h2 {
   padding-top: 1rem;
 }
 
+.onsite-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin: 0.9rem 0 0.2rem;
+}
+
+.onsite-strip img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
 .metric-grid article {
   min-height: 8rem;
   padding: 1rem;
@@ -617,6 +632,34 @@ textarea:focus {
   gap: 1rem;
 }
 
+.onsite-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.onsite-gallery figure {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(18, 22, 26, 0.78);
+  box-shadow: var(--shadow);
+}
+
+.onsite-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.onsite-gallery figcaption {
+  padding: 0.85rem 1rem;
+  color: var(--text);
+  font-weight: 800;
+}
+
 .post-card {
   padding: 1rem;
   box-shadow: none;
@@ -667,6 +710,7 @@ textarea:focus {
   .quick-facts,
   .steps,
   .post-grid,
+  .onsite-gallery,
   .package-grid {
     grid-template-columns: 1fr;
   }

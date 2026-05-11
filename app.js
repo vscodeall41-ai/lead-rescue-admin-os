@@ -95,6 +95,9 @@ const whatsappLink = document.querySelector("#whatsappLink");
 const summaryBox = document.querySelector("#summaryBox");
 const jobTypeSelect = document.querySelector('select[name="jobType"]');
 const contentServiceSelect = document.querySelector("#contentService");
+const onsiteStrip = document.querySelector("#onsiteStrip");
+const onsiteMediaSection = document.querySelector("#onsiteMediaSection");
+const onsiteGallery = document.querySelector("#onsiteGallery");
 
 function setText(selector, value) {
   const element = document.querySelector(selector);
@@ -138,6 +141,7 @@ function configureProfileUi() {
 
   replaceOptions(jobTypeSelect, profileServices());
   replaceOptions(contentServiceSelect, Object.keys(contentServices()));
+  renderOnsiteMedia();
 
   if (CONTACT.whatsapp) {
     whatsappLink.href = `https://wa.me/${CONTACT.whatsapp}`;
@@ -154,6 +158,49 @@ function configureProfileUi() {
         link.textContent = profile.label || profile.appName || profile.id;
         link.className = profile.id === PROFILE_ID ? "active" : "";
         return link;
+      })
+    );
+  }
+}
+
+function renderOnsiteMedia() {
+  const media = ACTIVE_PROFILE.onsiteMedia;
+  if (!media || !media.images || !media.images.length) {
+    if (onsiteStrip) onsiteStrip.hidden = true;
+    if (onsiteMediaSection) onsiteMediaSection.hidden = true;
+    return;
+  }
+
+  setText("#onsiteLabel", media.label);
+  setText("#onsiteTitle", media.title);
+  setText("#onsiteIntro", media.intro);
+
+  if (onsiteStrip) {
+    onsiteStrip.hidden = false;
+    onsiteStrip.replaceChildren(
+      ...media.images.slice(0, 3).map((image) => {
+        const img = document.createElement("img");
+        img.src = image.src;
+        img.alt = image.alt;
+        img.loading = "eager";
+        return img;
+      })
+    );
+  }
+
+  if (onsiteMediaSection && onsiteGallery) {
+    onsiteMediaSection.hidden = false;
+    onsiteGallery.replaceChildren(
+      ...media.images.map((image) => {
+        const figure = document.createElement("figure");
+        const img = document.createElement("img");
+        const caption = document.createElement("figcaption");
+        img.src = image.src;
+        img.alt = image.alt;
+        img.loading = "lazy";
+        caption.textContent = image.caption;
+        figure.append(img, caption);
+        return figure;
       })
     );
   }
